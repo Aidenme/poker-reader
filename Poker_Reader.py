@@ -2,11 +2,6 @@ import csv
 import TextHeadGenerator
 import re
 
-#Hands won
-#Track 1v1s and who wins with what
-#Heads up counter. That's basically 1st and 2nd place winners
-#Types of hands won on. I want to know what everyone wins on.
-
 poker_log = []
 players = []
 player_stats = []
@@ -31,9 +26,6 @@ def set_players_list():
         if row[0].startswith("The admin approved the player"):
             split_row = row[0].split()
             players.append(split_row[5].strip('"'))
-    #for row in poker_log:
-    #    if row[0] == '"The' and row[1] == "admin" and row[2] == "approved":
-    #        players.append(row[5].strip('"'))
 
 def print_players():
     print("Players in game:")
