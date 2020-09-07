@@ -2,45 +2,73 @@ import csv
 import TextHeadGenerator
 import re
 
-#Hands won
-#Track 1v1s and who wins with what
-#Heads up counter. That's basically 1st and 2nd place winners
-#Types of hands won on. I want to know what everyone wins on.
-
 poker_log = []
-players = []
 player_stats = []
 you = {}
 
-def csv_to_poker_log():
-    with open('PokerLog.csv') as csvfile:
-        poker_log_reader = csv.reader(csvfile, delimiter=',')
-        for row in poker_log_reader:
-            poker_log.append(row)
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.folds = 0
+        self.calls = 0
+        self.wins = 0
 
-def print_poker_log():
-    for row in poker_log:
-        print(row)
+class Game:
+    def __init__(self):
+        self.players = []
+        self.poker_log =[]
+        self.players_isset = False
+        self.log_isset = False
 
-def set_players_list():
-    #Split the last row in the log
-    split_row = poker_log[len(poker_log) - 1][0].split()
-    players.append(split_row[2].strip('"'))
-    #Add the other players to the list
-    for row in poker_log:
-        if row[0].startswith("The admin approved the player"):
-            split_row = row[0].split()
-            players.append(split_row[5].strip('"'))
-    #for row in poker_log:
-    #    if row[0] == '"The' and row[1] == "admin" and row[2] == "approved":
-    #        players.append(row[5].strip('"'))
+    def set_players(self):
+        player_names = []
+        #Split the last row in the log
+        split_row = self.poker_log[len(self.poker_log) - 1][0].split()
+        #Add the admin to the list
+        name = split_row[2].strip('"')
+        self.players.append(Player(name))
+        player_names.append(name)
+        #Add the other players to the list
+        for row in self.poker_log:
+            if row[0].startswith("The admin approved the player"):
+                split_row = row[0].split()
+                name = split_row[5].strip('"')
+                #Handling duplicates (like if a game restarts)
+                if name not in player_names:
+                    self.players.append(Player(name))
+                    player_names.append(name)
+        self.players_isset = True
 
-def print_players():
-    print("Players in game:")
-    for row in players:
-        print(row)
+    def set_game_from_csv(self, csv_file):
+        with open(csv_file) as csvfile:
+            poker_log_reader = csv.reader(csvfile, delimiter=',')
+            for row in poker_log_reader:
+                self.poker_log.append(row)
+        self.log_isset = True
+        self.set_players()
 
-def get_player_folds(player):
+    def print_poker_log(self):
+        if self.log_isset == True:
+            for row in self.poker_log:
+                print(row)
+        else:
+            print("Error: poker_log is not set!")
+
+    def print_player_names(self):
+        if self.players_isset == True:
+            for row in self.players:
+                print(row.name)
+        else:
+            print("Error: players are not set!")
+
+    def get_player_folds(self, player_name):
+        fold_total = 0
+        for row in self.poker_log:
+            if player_name in row[0] and "folds" in row[0]:
+                fold_total += 1
+        return fold_total
+
+def get_player_folds(game, player):
     fold_total = 0
     for row in poker_log:
         if player in row[0] and "folds" in row[0]:
@@ -54,20 +82,23 @@ def get_player_calls(player):
             calls_total += 1
     return calls_total
 
-def set_player_stats():
-    for player in players:
-        player_stats.append({
-            "name" : player,
-            "folds" : get_player_folds(player),
-            "calls" : get_player_calls(player)
-        })
+def get_player_wins(player):
+    wins_total = 0
+    for row in poker_log:
+        if player in row[0] and "collected" in row[0]:
+            wins_total += 1
+    return wins_total
+
+def set_player_stats(game):
+    for player in game.players:
+        player.folds = 10
+        player.calls = 10
+        player.wins = 10
 
 def set_your_stats():
     you["hands"] = get_your_hands()
 
-
-
-def display_player_stat(stat):
+def display_player_stats(stat):
     folds_display = []
 
     def take_key_value(key):
@@ -99,9 +130,10 @@ def display_menu():
     print("4. Display calling stats")
     print("5. Print poker_log")
     print("6. Get your hands")
+    print("7. Get winning stats")
     selection = input()
     if selection == "1":
-        print_players()
+        the_game.print_player_names()
         display_menu()
     elif selection == "2":
         print("Player fold stats:")
@@ -119,12 +151,14 @@ def display_menu():
     elif selection == "6":
         display_your_hands()
         display_menu()
+    elif selection == "7":
+        display_player_stat("wins")
+        display_menu()
 
-
-csv_to_poker_log()
-set_players_list()
-set_player_stats()
+the_game = Game()
+the_game.set_game_from_csv('PokerLog.csv')
+#set_players_list()
+#set_player_stats()
 set_your_stats()
 TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
 display_menu()
-print(you)
