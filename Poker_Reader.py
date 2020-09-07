@@ -46,6 +46,7 @@ class Game:
                 self.poker_log.append(row)
         self.log_isset = True
         self.set_players()
+        self.set_all_player_stats()
 
     def print_poker_log(self):
         if self.log_isset == True:
@@ -61,12 +62,22 @@ class Game:
         else:
             print("Error: players are not set!")
 
-    def get_player_folds(self, player_name):
+    def get_player_folds(self, player):
         fold_total = 0
         for row in self.poker_log:
-            if player_name in row[0] and "folds" in row[0]:
+            if player.name in row[0] and "folds" in row[0]:
                 fold_total += 1
         return fold_total
+
+    def set_all_player_stats(self):
+        for player in self.players:
+            player.folds = self.get_player_folds(player)
+
+    def display_player_stat_list(self):
+        sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
+        for player in sorted_players:
+            print(player.name + ": " + str(player.folds))
+
 
 def get_player_folds(game, player):
     fold_total = 0
@@ -161,4 +172,5 @@ the_game.set_game_from_csv('PokerLog.csv')
 #set_player_stats()
 set_your_stats()
 TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
-display_menu()
+#display_menu()
+the_game.display_player_stat_list()
