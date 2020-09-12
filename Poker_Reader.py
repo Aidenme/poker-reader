@@ -62,21 +62,47 @@ class Game:
         else:
             print("Error: players are not set!")
 
-    def get_player_folds(self, player):
+    def set_player_folds(self, player):
         fold_total = 0
         for row in self.poker_log:
             if player.name in row[0] and "folds" in row[0]:
                 fold_total += 1
         return fold_total
 
+    def set_player_calls(self, player):
+        calls_total = 0
+        for row in self.poker_log:
+            if player.name in row[0] and "calls" in row[0]:
+                calls_total += 1
+        return calls_total
+
+    def set_player_wins(self, player):
+        wins_total = 0
+        for row in self.poker_log:
+            if player.name in row[0] and "collected" in row[0]:
+                wins_total += 1
+        return wins_total
+
     def set_all_player_stats(self):
         for player in self.players:
-            player.folds = self.get_player_folds(player)
+            player.folds = self.set_player_folds(player)
+            player.calls = self.set_player_calls(player)
+            player.wins = self.set_player_wins(player)
 
-    def display_player_stat_list(self):
+    def display_player_folds(self):
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
         for player in sorted_players:
             print(player.name + ": " + str(player.folds))
+
+    def display_player_calls(self):
+        sorted_players = sorted(self.players, key=lambda player: player.calls, reverse=True)
+        for player in sorted_players:
+            print(player.name + ": " + str(player.calls))
+
+    def display_player_wins(self):
+        sorted_players = sorted(self.players, key=lambda player: player.wins, reverse=True)
+        for player in sorted_players:
+            print(player.name + ": " + str(player.wins))
 
 
 def get_player_folds(game, player):
@@ -148,13 +174,13 @@ def display_menu():
         display_menu()
     elif selection == "2":
         print("Player fold stats:")
-        display_player_stat("folds")
+        the_game.display_player_folds()
         display_menu()
     elif selection == "3":
         exit()
     elif selection == "4":
         print("Player call stats:")
-        display_player_stat("calls")
+        the_game.display_player_calls()
         display_menu()
     elif selection == "5":
         print_poker_log()
@@ -163,7 +189,8 @@ def display_menu():
         display_your_hands()
         display_menu()
     elif selection == "7":
-        display_player_stat("wins")
+        print("Player hand wins:")
+        the_game.display_player_wins()
         display_menu()
 
 the_game = Game()
@@ -172,5 +199,4 @@ the_game.set_game_from_csv('PokerLog.csv')
 #set_player_stats()
 set_your_stats()
 TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
-#display_menu()
-the_game.display_player_stat_list()
+display_menu()
