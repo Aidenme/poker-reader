@@ -104,47 +104,8 @@ class Game:
         for player in sorted_players:
             print(player.name + ": " + str(player.wins))
 
-
-def get_player_folds(game, player):
-    fold_total = 0
-    for row in poker_log:
-        if player in row[0] and "folds" in row[0]:
-            fold_total += 1
-    return fold_total
-
-def get_player_calls(player):
-    calls_total = 0
-    for row in poker_log:
-        if player in row[0] and "calls" in row[0]:
-            calls_total += 1
-    return calls_total
-
-def get_player_wins(player):
-    wins_total = 0
-    for row in poker_log:
-        if player in row[0] and "collected" in row[0]:
-            wins_total += 1
-    return wins_total
-
-def set_player_stats(game):
-    for player in game.players:
-        player.folds = 10
-        player.calls = 10
-        player.wins = 10
-
 def set_your_stats():
     you["hands"] = get_your_hands()
-
-def display_player_stats(stat):
-    folds_display = []
-
-    def take_key_value(key):
-        return key.get(stat)
-
-    folds_display = sorted(player_stats, key=take_key_value, reverse=True)
-
-    for row in folds_display:
-        print(row.get("name") + ": " + str(row.get(stat)))
 
 def get_your_hands():
     your_hands = []
@@ -183,7 +144,7 @@ def display_menu():
         the_game.display_player_calls()
         display_menu()
     elif selection == "5":
-        print_poker_log()
+        the_game.print_poker_log()
         display_menu()
     elif selection == "6":
         display_your_hands()
@@ -195,8 +156,6 @@ def display_menu():
 
 the_game = Game()
 the_game.set_game_from_csv('PokerLog.csv')
-#set_players_list()
-#set_player_stats()
 set_your_stats()
 TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
 display_menu()
