@@ -2,8 +2,6 @@ import csv
 import TextHeadGenerator
 import re
 
-you = {}
-
 class You:
     def __init__(self):
         self.hands = []
@@ -123,13 +121,6 @@ class Game:
     def display_your_hands(self):
         for row in self.yourself.hands:
             print(row[0] + " " + row[1])
-
-def set_your_stats():
-    you["hands"] = get_your_hands()
-
-def display_your_hands():
-    for row in you["hands"]:
-        print(row[0] + " " + row[1])
 
 def display_menu():
     print("Please choose what you would like to do:")
