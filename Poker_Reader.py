@@ -2,9 +2,11 @@ import csv
 import TextHeadGenerator
 import re
 
-poker_log = []
-player_stats = []
 you = {}
+
+class You:
+    def __init__(self):
+        self.hands = []
 
 class Player:
     def __init__(self, name):
@@ -16,9 +18,10 @@ class Player:
 class Game:
     def __init__(self):
         self.players = []
-        self.poker_log =[]
+        self.poker_log = []
         self.players_isset = False
         self.log_isset = False
+        self.yourself = You()
 
     def set_players(self):
         player_names = []
@@ -47,6 +50,7 @@ class Game:
         self.log_isset = True
         self.set_players()
         self.set_all_player_stats()
+        self.set_yourself()
 
     def print_poker_log(self):
         if self.log_isset == True:
@@ -104,17 +108,24 @@ class Game:
         for player in sorted_players:
             print(player.name + ": " + str(player.wins))
 
+    def set_yourself(self):
+        self.yourself.hands = self.get_your_hands()
+
+    def get_your_hands(self):
+        your_hands = []
+        for row in self.poker_log:
+            if "Your hand" in row[0]:
+                reg_result = re.findall("[0-9JQKA][♦♣♥♠]|10[♦♣♥♠]", row[0])
+                hand = reg_result
+                your_hands.append(hand)
+        return your_hands
+
+    def display_your_hands(self):
+        for row in self.yourself.hands:
+            print(row[0] + " " + row[1])
+
 def set_your_stats():
     you["hands"] = get_your_hands()
-
-def get_your_hands():
-    your_hands = []
-    for row in poker_log:
-        if "Your hand" in row[0]:
-            reg_result = re.findall("[0-9JQKA][♦♣♥♠]|10[♦♣♥♠]", row[0])
-            hand = reg_result
-            your_hands.append(hand)
-    return your_hands
 
 def display_your_hands():
     for row in you["hands"]:
@@ -127,8 +138,8 @@ def display_menu():
     print("3. Exit")
     print("4. Display calling stats")
     print("5. Print poker_log")
-    print("6. Get your hands")
-    print("7. Get winning stats")
+    print("6. Display your hands")
+    print("7. Display winning stats")
     selection = input()
     if selection == "1":
         the_game.print_player_names()
@@ -147,7 +158,7 @@ def display_menu():
         the_game.print_poker_log()
         display_menu()
     elif selection == "6":
-        display_your_hands()
+        the_game.display_your_hands()
         display_menu()
     elif selection == "7":
         print("Player hand wins:")
@@ -156,6 +167,5 @@ def display_menu():
 
 the_game = Game()
 the_game.set_game_from_csv('PokerLog.csv')
-set_your_stats()
 TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
 display_menu()
