@@ -1,6 +1,7 @@
 import csv
 import TextHeadGenerator
 import re
+from datetime import datetime
 
 class You:
     def __init__(self):
@@ -9,9 +10,11 @@ class You:
 class Player:
     def __init__(self, name):
         self.name = name
-        self.folds = 0
-        self.calls = 0
-        self.wins = 0
+        self.folds = None
+        self.calls = None
+        self.wins = None
+        self.chips_quit_with = None
+        self.time_in_game = None
 
 class Game:
     def __init__(self):
@@ -20,6 +23,7 @@ class Game:
         self.players_isset = False
         self.log_isset = False
         self.yourself = You()
+        self.game_length = None
 
     def set_players(self):
         player_names = []
@@ -49,6 +53,7 @@ class Game:
         self.set_players()
         self.set_all_player_stats()
         self.set_yourself()
+        self.set_game_length()
 
     def print_poker_log(self):
         if self.log_isset == True:
@@ -122,6 +127,26 @@ class Game:
         for row in self.yourself.hands:
             print(row[0] + " " + row[1])
 
+    def set_game_length(self):
+        start_time = self.get_time_from_log_row(-1)
+        end_time = self.get_time_from_log_row(1)
+        length_delta = end_time - start_time
+        self.game_length = length_delta
+
+    def get_time_from_log_row(self, row):
+        time_string = self.poker_log[row][1]
+        year = re.findall("[0-9]{4}", time_string)
+        month = re.findall("-([0-9]{2})-", time_string)
+        day = re.findall("-([0-9]{2})T", time_string)
+        hour = re.findall("T([0-9]{2}):", time_string)
+        minute = re.findall(":([0-9]{2}):", time_string)
+        second = re.findall(":([0-9]{2}).", time_string)
+        time = datetime(int(year[0]), int(month[0]), int(day[0]), int(hour[0]), int(minute[0]), int(second[0]))
+        return time
+
+
+
+
 def display_menu():
     print("Please choose what you would like to do:")
     print("1. List all players")
@@ -131,6 +156,7 @@ def display_menu():
     print("5. Print poker_log")
     print("6. Display your hands")
     print("7. Display winning stats")
+    print("8. Display game length")
     selection = input()
     if selection == "1":
         the_game.print_player_names()
@@ -154,6 +180,10 @@ def display_menu():
     elif selection == "7":
         print("Player hand wins:")
         the_game.display_player_wins()
+        display_menu()
+    elif selection == "8":
+        print("Game length (HH:MM:SS):")
+        print(the_game.game_length)
         display_menu()
 
 the_game = Game()
