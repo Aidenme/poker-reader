@@ -33,8 +33,6 @@ class Player:
         self.folds = None
         self.calls = None
         self.wins = None
-        self.chips_quit_with = None
-        self.quit_timecode = None
 
 class Game:
     def __init__(self):
@@ -42,8 +40,6 @@ class Game:
         self.poker_log = []
         self.players_isset = False
         self.log_isset = False
-        self.yourself = You()
-        self.game_length = None
 
     def set_players(self):
         player_names = []
