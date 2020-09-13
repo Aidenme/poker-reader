@@ -5,13 +5,36 @@ import re
 class You:
     def __init__(self):
         self.hands = []
+        self.hands_isset = False
+
+    def set_you_from_game(self, game):
+        self.hands = self.get_your_hands(game)
+        self.hands_isset = True
+
+    def get_your_hands(self, game):
+        your_hands = []
+        for row in game.poker_log:
+            if "Your hand" in row[0]:
+                reg_result = re.findall("[0-9JQKA][♦♣♥♠]|10[♦♣♥♠]", row[0])
+                hand = reg_result
+                your_hands.append(hand)
+        return your_hands
+
+    def display_your_hands(self):
+        if self.hands_isset == True:
+            for row in self.hands:
+                print(row[0] + " " + row[1])
+        else:
+            print("Error: Your hands are not set!")
 
 class Player:
     def __init__(self, name):
         self.name = name
-        self.folds = 0
-        self.calls = 0
-        self.wins = 0
+        self.folds = None
+        self.calls = None
+        self.wins = None
+        self.chips_quit_with = None
+        self.quit_timecode = None
 
 class Game:
     def __init__(self):
@@ -20,6 +43,7 @@ class Game:
         self.players_isset = False
         self.log_isset = False
         self.yourself = You()
+        self.game_length = None
 
     def set_players(self):
         player_names = []
@@ -48,7 +72,6 @@ class Game:
         self.log_isset = True
         self.set_players()
         self.set_all_player_stats()
-        self.set_yourself()
 
     def print_poker_log(self):
         if self.log_isset == True:
@@ -106,22 +129,6 @@ class Game:
         for player in sorted_players:
             print(player.name + ": " + str(player.wins))
 
-    def set_yourself(self):
-        self.yourself.hands = self.get_your_hands()
-
-    def get_your_hands(self):
-        your_hands = []
-        for row in self.poker_log:
-            if "Your hand" in row[0]:
-                reg_result = re.findall("[0-9JQKA][♦♣♥♠]|10[♦♣♥♠]", row[0])
-                hand = reg_result
-                your_hands.append(hand)
-        return your_hands
-
-    def display_your_hands(self):
-        for row in self.yourself.hands:
-            print(row[0] + " " + row[1])
-
 def display_menu():
     print("Please choose what you would like to do:")
     print("1. List all players")
@@ -149,7 +156,7 @@ def display_menu():
         the_game.print_poker_log()
         display_menu()
     elif selection == "6":
-        the_game.display_your_hands()
+        yourself.display_your_hands()
         display_menu()
     elif selection == "7":
         print("Player hand wins:")
@@ -157,6 +164,8 @@ def display_menu():
         display_menu()
 
 the_game = Game()
+yourself = You()
 the_game.set_game_from_csv('PokerLog.csv')
+yourself.set_you_from_game(the_game)
 TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
 display_menu()
