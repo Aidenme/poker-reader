@@ -24,6 +24,8 @@ class Game:
         self.log_isset = False
         self.yourself = You()
         self.game_length = None
+        self.game_start_time = None
+        self.game_end_time = None
 
     def set_players(self):
         player_names = []
@@ -50,10 +52,10 @@ class Game:
             for row in poker_log_reader:
                 self.poker_log.append(row)
         self.log_isset = True
+        self.set_game_time_stats()
         self.set_players()
         self.set_all_player_stats()
         self.set_yourself()
-        self.set_game_length()
 
     def print_poker_log(self):
         if self.log_isset == True:
@@ -90,11 +92,20 @@ class Game:
                 wins_total += 1
         return wins_total
 
+    def set_player_play_time(self, player):
+        play_time = None
+        for row in self.poker_log:
+            if player.name in row[0] and "quit" in row[0]:
+                quit_time = self.get_time_from_string(row[1])
+                play_time = quit_time - self.game_start_time
+        return play_time
+
     def set_all_player_stats(self):
         for player in self.players:
             player.folds = self.set_player_folds(player)
             player.calls = self.set_player_calls(player)
             player.wins = self.set_player_wins(player)
+            player.time_in_game = self.set_player_play_time(player)
 
     def display_player_folds(self):
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
@@ -110,6 +121,11 @@ class Game:
         sorted_players = sorted(self.players, key=lambda player: player.wins, reverse=True)
         for player in sorted_players:
             print(player.name + ": " + str(player.wins))
+
+    def display_player_play_time(self):
+        sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
+        for player in sorted_players:
+            print(player.name + ": " + str(player.time_in_game))
 
     def set_yourself(self):
         self.yourself.hands = self.get_your_hands()
@@ -127,14 +143,12 @@ class Game:
         for row in self.yourself.hands:
             print(row[0] + " " + row[1])
 
-    def set_game_length(self):
-        start_time = self.get_time_from_log_row(-1)
-        end_time = self.get_time_from_log_row(1)
-        length_delta = end_time - start_time
-        self.game_length = length_delta
+    def set_game_time_stats(self):
+        self.game_start_time = self.get_time_from_string(self.poker_log[-1][1])
+        self.game_end_time = self.get_time_from_string(self.poker_log[1][1])
+        self.game_length = self.game_end_time - self.game_start_time
 
-    def get_time_from_log_row(self, row):
-        time_string = self.poker_log[row][1]
+    def get_time_from_string(self, time_string):
         year = re.findall("[0-9]{4}", time_string)
         month = re.findall("-([0-9]{2})-", time_string)
         day = re.findall("-([0-9]{2})T", time_string)
@@ -143,8 +157,6 @@ class Game:
         second = re.findall(":([0-9]{2}).", time_string)
         time = datetime(int(year[0]), int(month[0]), int(day[0]), int(hour[0]), int(minute[0]), int(second[0]))
         return time
-
-
 
 
 def display_menu():
@@ -157,6 +169,7 @@ def display_menu():
     print("6. Display your hands")
     print("7. Display winning stats")
     print("8. Display game length")
+    print("9. Display play time stats")
     selection = input()
     if selection == "1":
         the_game.print_player_names()
@@ -184,6 +197,10 @@ def display_menu():
     elif selection == "8":
         print("Game length (HH:MM:SS):")
         print(the_game.game_length)
+        display_menu()
+    elif selection == "9":
+        print("Play time stats:")
+        the_game.display_player_play_time()
         display_menu()
 
 the_game = Game()
