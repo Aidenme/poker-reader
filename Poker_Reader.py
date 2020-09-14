@@ -92,20 +92,23 @@ class Game:
                 wins_total += 1
         return wins_total
 
-    def set_player_play_time(self, player):
+    def set_player_quit_stats(self, player):
         play_time = None
+        quit_chips = None
         for row in self.poker_log:
             if player.name in row[0] and "quit" in row[0]:
                 quit_time = self.get_time_from_string(row[1])
                 play_time = quit_time - self.game_start_time
-        return play_time
+                quit_chips = int((row[0].split("of "))[1].rstrip("."))
+        return play_time, quit_chips
 
     def set_all_player_stats(self):
         for player in self.players:
             player.folds = self.set_player_folds(player)
             player.calls = self.set_player_calls(player)
             player.wins = self.set_player_wins(player)
-            player.time_in_game = self.set_player_play_time(player)
+            player.time_in_game, player.chips_quit_with = self.set_player_quit_stats(player)
+            print(player.chips_quit_with)
 
     def display_player_folds(self):
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
