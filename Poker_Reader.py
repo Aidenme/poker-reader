@@ -108,7 +108,6 @@ class Game:
             player.calls = self.set_player_calls(player)
             player.wins = self.set_player_wins(player)
             player.time_in_game, player.chips_quit_with = self.set_player_quit_stats(player)
-            print(player.chips_quit_with)
 
     def display_player_folds(self):
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
@@ -129,6 +128,42 @@ class Game:
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
             print(player.name + ": " + str(player.time_in_game))
+
+    def display_player_placement(self):
+        players_with_chips = []
+        players_without_chips = []
+        placement_list = []
+        #Seperate the players with and without chips to find players who split
+        for player in self.players:
+            if player.chips_quit_with == 0:
+                players_without_chips.append(player)
+            else:
+                players_with_chips.append(player)
+        #Make sure players with chips are the last players in the game (in case someone quit early)
+        for player in players_with_chips:
+            if player.time_in_game <= players_without_chips[0].time_in_game:
+                players_without_chips.append(player)
+                players_with_chips.remove(player)
+        sorted_and_chipless = sorted(players_without_chips, key=lambda player: player.time_in_game, reverse=True)
+        if len(players_with_chips) > 1:
+            sorted_with_chips = sorted(players_with_chips, key=lambda player: player.chips_quit_with, reverse=True)
+            for player in sorted_with_chips:
+                placement_list.append(player.name + " split with " + str(player.chips_quit_with) + " chips")
+        else:
+            placement_list.append(player.name)
+        for player in sorted_and_chipless:
+            placement_list.append(player.name)
+        for iteration, string_row in enumerate(placement_list):
+            place = iteration + 1
+            if place == 1:
+                ordinal_indicator = "st"
+            elif place == 2:
+                ordinal_indicator = "nd"
+            elif place == 3:
+                ordinal_indicator = "rd"
+            else:
+                ordinal_indicator = "th"
+            print(str(place) + ordinal_indicator + " - " + string_row)
 
     def set_yourself(self):
         self.yourself.hands = self.get_your_hands()
@@ -173,6 +208,7 @@ def display_menu():
     print("7. Display winning stats")
     print("8. Display game length")
     print("9. Display play time stats")
+    print("10. Display player placement")
     selection = input()
     if selection == "1":
         the_game.print_player_names()
@@ -204,6 +240,10 @@ def display_menu():
     elif selection == "9":
         print("Play time stats:")
         the_game.display_player_play_time()
+        display_menu()
+    elif selection == "10":
+        print("Player placements:")
+        the_game.display_player_placement()
         display_menu()
 
 the_game = Game()
