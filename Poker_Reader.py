@@ -1,7 +1,14 @@
 import csv
 import TextHeadGenerator
 import re
+import tkinter as tk
 from datetime import datetime
+
+window = tk.Tk()
+menu_frame = tk.Frame()
+display_frame = tk.Frame()
+menu_frame.pack(side=tk.LEFT)
+display_frame.pack(side=tk.RIGHT)
 
 class You:
     def __init__(self):
@@ -130,14 +137,20 @@ class Game:
             player.time_in_game, player.chips_quit_with = self.set_player_quit_stats(player)
 
     def display_player_folds(self):
+        for widget in display_frame.winfo_children():
+            widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
         for player in sorted_players:
-            print(player.name + ": " + str(player.folds))
+            list_label = tk.Label(text=player.name + ": " + str(player.folds), master=display_frame)
+            list_label.pack()
 
     def display_player_calls(self):
+        for widget in display_frame.winfo_children():
+            widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.calls, reverse=True)
         for player in sorted_players:
-            print(player.name + ": " + str(player.calls))
+            list_label = tk.Label(text=player.name + ": " + str(player.calls), master=display_frame)
+            list_label.pack()
 
     def display_player_wins(self):
         sorted_players = sorted(self.players, key=lambda player: player.wins, reverse=True)
@@ -159,7 +172,7 @@ class Game:
                 players_without_chips.append(player)
             else:
                 players_with_chips.append(player)
-        #Make sure players with chips are the last players in the game (in case someone quit early)
+        #Make sure players with chips are the last players in the game (in case someone quit early with chips
         for player in players_with_chips:
             if player.time_in_game <= players_without_chips[0].time_in_game:
                 players_without_chips.append(player)
@@ -185,22 +198,6 @@ class Game:
                 ordinal_indicator = "th"
             print(str(place) + ordinal_indicator + " - " + string_row)
 
-    def set_yourself(self):
-        self.yourself.hands = self.get_your_hands()
-
-    def get_your_hands(self):
-        your_hands = []
-        for row in self.poker_log:
-            if "Your hand" in row[0]:
-                reg_result = re.findall("[0-9JQKA][♦♣♥♠]|10[♦♣♥♠]", row[0])
-                hand = reg_result
-                your_hands.append(hand)
-        return your_hands
-
-    def display_your_hands(self):
-        for row in self.yourself.hands:
-            print(row[0] + " " + row[1])
-
     def set_game_time_stats(self):
         self.game_start_time = self.get_time_from_string(self.poker_log[-1][1])
         self.game_end_time = self.get_time_from_string(self.poker_log[1][1])
@@ -216,6 +213,22 @@ class Game:
         time = datetime(int(year[0]), int(month[0]), int(day[0]), int(hour[0]), int(minute[0]), int(second[0]))
         return time
 
+def display_window_menu():
+    prompt = tk.Label(text="Please make a selection below:", master=menu_frame)
+    prompt.pack()
+    #button_one = tk.Button(text="List all players", master=frame, command=window_player_list(frame))
+    #button_one.pack()
+
+def window_player_list():
+    for widget in display_frame.winfo_children():
+        widget.destroy()
+    for player in the_game.players:
+        list_label = tk.Label(text=player.name, master=display_frame)
+        list_label.pack()
+
+def display_window_display(frame):
+    display_label = tk.Label(text="This should be on the right side")
+    display_label.pack()
 
 def display_menu():
     print("Please choose what you would like to do:")
@@ -270,5 +283,18 @@ the_game = Game()
 yourself = You()
 the_game.set_game_from_csv('PokerLog.csv')
 yourself.set_you_from_game(the_game)
-TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
-display_menu()
+display_window_menu()
+#display_window_display(display_frame)
+players_btn = tk.Button(text="List all players", master=menu_frame, command=window_player_list)
+folds_btn = tk.Button(text="Player Fold Stats", master=menu_frame, command=the_game.display_player_folds)
+calls_btn = tk.Button(text="Player Call Stats", master=menu_frame, command=the_game.display_player_calls)
+wins_btn = tk.Button(text="Player Hand Win Stats", master=menu_frame, command=the_game.display_player_wins)
+playtime_btn = tk.Button(text="Player Play Time Stats", master=menu_frame, command=the_game.display_player_play_time)
+players_btn.pack()
+folds_btn.pack()
+calls_btn.pack()
+wins_btn.pack()
+playtime_btn.pack()
+window.mainloop()
+#TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
+#display_menu()
