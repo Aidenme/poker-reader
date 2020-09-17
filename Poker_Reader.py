@@ -153,14 +153,20 @@ class Game:
             list_label.pack()
 
     def display_player_wins(self):
+        for widget in display_frame.winfo_children():
+            widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.wins, reverse=True)
         for player in sorted_players:
-            print(player.name + ": " + str(player.wins))
+            list_label = tk.Label(text=player.name + ": " + str(player.wins), master=display_frame)
+            list_label.pack()
 
     def display_player_play_time(self):
+        for widget in display_frame.winfo_children():
+            widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
-            print(player.name + ": " + str(player.time_in_game))
+            list_label = tk.Label(text=player.name + ": " + str(player.time_in_game), master=display_frame)
+            list_label.pack()
 
     def display_player_placement(self):
         players_with_chips = []
