@@ -146,20 +146,13 @@ class Game:
             player.time_in_game, player.chips_quit_with = self.set_player_quit_stats(player)
 
     def display_player_folds(self, frame):
-        relief = tk.RAISED
-        border_width = 2
-        for widget in frame.winfo_children():
-            widget.destroy()
+        player_list = []
+        folds_list = []
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
-        for iteration, player in enumerate(sorted_players):
-            name_frame = tk.Frame(relief=relief,  width=100, borderwidth=border_width, master=frame)
-            name_lbl = tk.Label(text=player.name, master=name_frame)
-            folds_frame = tk.Frame(relief=relief, width=20, borderwidth=border_width, master=frame)
-            folds_lbl = tk.Label(text=str(player.folds), master=folds_frame)
-            name_frame.grid(row=iteration, column=0, sticky="we")
-            name_lbl.pack()
-            folds_frame.grid(row=iteration, column=1, sticky="we")
-            folds_lbl.pack()
+        for player in sorted_players:
+            player_list.append(player.name)
+            folds_list.append(player.folds)
+        display_stat_grid(player_list, folds_list, grid_frame=frame)
             #iteration, string_row in enumerate(placement_list)
 
     def display_player_calls(self, frame):
@@ -172,22 +165,27 @@ class Game:
         display_stat_grid(player_list, calls_list, grid_frame=frame)
 
     def display_player_wins(self, frame):
-        for widget in frame.winfo_children():
-            widget.destroy()
+        player_list = []
+        wins_list = []
         sorted_players = sorted(self.players, key=lambda player: player.wins, reverse=True)
         for player in sorted_players:
-            list_label = tk.Label(text=player.name + ": " + str(player.wins), master=frame)
-            list_label.grid(sticky="n")
+            player_list.append(player.name)
+            wins_list.append(player.wins)
+        display_stat_grid(player_list, wins_list, grid_frame=frame)
 
     def display_player_play_time(self, frame):
-        for widget in frame.winfo_children():
-            widget.destroy()
+        player_list = []
+        play_time_list = []
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
-            list_label = tk.Label(text=player.name + ": " + str(player.time_in_game), master=frame)
-            list_label.grid(sticky="n")
+            player_list.append(player.name)
+            play_time_list.append(player.time_in_game)
+        display_stat_grid(player_list, play_time_list, grid_frame=frame)
 
     def display_player_placement(self, frame):
+        player_list = []
+        chips_list = []
+        placement_string_list = []
         for widget in frame.winfo_children():
             widget.destroy()
         players_with_chips = []
