@@ -5,10 +5,16 @@ import tkinter as tk
 from datetime import datetime
 
 window = tk.Tk()
-menu_frame = tk.Frame()
-display_frame = tk.Frame()
-menu_frame.pack(side=tk.LEFT)
-display_frame.pack(side=tk.RIGHT)
+window.columnconfigure([0, 1], weight=1, minsize=250)
+window.rowconfigure(1, weight=1, minsize=500)
+header_frame = tk.Frame(master=window, height=50, relief=tk.RAISED, borderwidth=5, bg="green")
+view_frame = tk.Frame(master=window, bg="yellow")
+left_frame = tk.Frame(master=view_frame, bg="blue")
+right_frame = tk.Frame(master=view_frame, bg="red")
+header_frame.grid(row=0, columnspan=2, sticky="new")
+view_frame.grid(row=1, columnspan=2, sticky="nsew")
+left_frame.grid(row=1, column=0, columnspan=1, sticky="nsew")
+right_frame.grid(row=1, column=1, sticky="nsew")
 
 class You:
     def __init__(self):
@@ -91,10 +97,13 @@ class Game:
         else:
             print("Error: poker_log is not set!")
 
-    def print_player_names(self):
+    def display_player_names(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
         if self.players_isset == True:
             for row in self.players:
-                print(row.name)
+                list_label = tk.Label(text=row.name, master=frame)
+                list_label.pack()
         else:
             print("Error: players are not set!")
 
@@ -136,39 +145,41 @@ class Game:
             player.wins = self.set_player_wins(player)
             player.time_in_game, player.chips_quit_with = self.set_player_quit_stats(player)
 
-    def display_player_folds(self):
-        for widget in display_frame.winfo_children():
+    def display_player_folds(self, frame):
+        for widget in frame.winfo_children():
             widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
         for player in sorted_players:
-            list_label = tk.Label(text=player.name + ": " + str(player.folds), master=display_frame)
-            list_label.pack()
+            list_label = tk.Label(text=player.name + ": " + str(player.folds), master=frame)
+            list_label.grid(sticky="n")
 
-    def display_player_calls(self):
-        for widget in display_frame.winfo_children():
+    def display_player_calls(self, frame):
+        for widget in frame.winfo_children():
             widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.calls, reverse=True)
         for player in sorted_players:
-            list_label = tk.Label(text=player.name + ": " + str(player.calls), master=display_frame)
-            list_label.pack()
+            list_label = tk.Label(text=player.name + ": " + str(player.calls), master=frame)
+            list_label.grid(sticky="n")
 
-    def display_player_wins(self):
-        for widget in display_frame.winfo_children():
+    def display_player_wins(self, frame):
+        for widget in frame.winfo_children():
             widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.wins, reverse=True)
         for player in sorted_players:
-            list_label = tk.Label(text=player.name + ": " + str(player.wins), master=display_frame)
-            list_label.pack()
+            list_label = tk.Label(text=player.name + ": " + str(player.wins), master=frame)
+            list_label.grid(sticky="n")
 
-    def display_player_play_time(self):
-        for widget in display_frame.winfo_children():
+    def display_player_play_time(self, frame):
+        for widget in frame.winfo_children():
             widget.destroy()
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
-            list_label = tk.Label(text=player.name + ": " + str(player.time_in_game), master=display_frame)
-            list_label.pack()
+            list_label = tk.Label(text=player.name + ": " + str(player.time_in_game), master=frame)
+            list_label.grid(sticky="n")
 
-    def display_player_placement(self):
+    def display_player_placement(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
         players_with_chips = []
         players_without_chips = []
         placement_list = []
@@ -202,7 +213,8 @@ class Game:
                 ordinal_indicator = "rd"
             else:
                 ordinal_indicator = "th"
-            print(str(place) + ordinal_indicator + " - " + string_row)
+            list_label = tk.Label(text=str(place) + ordinal_indicator + " - " + string_row, master=frame)
+            list_label.grid(sticky="n")
 
     def set_game_time_stats(self):
         self.game_start_time = self.get_time_from_string(self.poker_log[-1][1])
@@ -219,88 +231,28 @@ class Game:
         time = datetime(int(year[0]), int(month[0]), int(day[0]), int(hour[0]), int(minute[0]), int(second[0]))
         return time
 
-def display_window_menu():
-    prompt = tk.Label(text="Please make a selection below:", master=menu_frame)
-    prompt.pack()
-    #button_one = tk.Button(text="List all players", master=frame, command=window_player_list(frame))
-    #button_one.pack()
+def display_window_menu(menu_frame, display_frame, game):
+    players_btn = tk.Button(text="List all players", master=menu_frame, command=lambda: game.display_player_names(display_frame))
+    folds_btn = tk.Button(text="List Fold Stats", master=menu_frame, command=lambda: game.display_player_folds(display_frame))
+    calls_btn = tk.Button(text="List Call Stats", master=menu_frame, command=lambda: game.display_player_calls(display_frame))
+    wins_btn = tk.Button(text="List Hand Win Stats", master=menu_frame, command=lambda: game.display_player_wins(display_frame))
+    playtime_btn = tk.Button(text="List Play Times", master=menu_frame, command=lambda: game.display_player_play_time(display_frame))
+    placement_btn = tk.Button(text="List Placement", master=menu_frame, command=lambda: game.display_player_placement(display_frame))
+    players_btn.grid(row=0, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
+    folds_btn.grid(row=1, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
+    calls_btn.grid(row=2, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
+    wins_btn.grid(row=3, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
+    playtime_btn.grid(row=4, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
+    placement_btn.grid(row=5, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
 
-def window_player_list():
-    for widget in display_frame.winfo_children():
-        widget.destroy()
-    for player in the_game.players:
-        list_label = tk.Label(text=player.name, master=display_frame)
-        list_label.pack()
-
-def display_window_display(frame):
-    display_label = tk.Label(text="This should be on the right side")
-    display_label.pack()
-
-def display_menu():
-    print("Please choose what you would like to do:")
-    print("1. List all players")
-    print("2. Display folding stats")
-    print("3. Exit")
-    print("4. Display calling stats")
-    print("5. Print poker_log")
-    print("6. Display your hands")
-    print("7. Display winning stats")
-    print("8. Display game length")
-    print("9. Display play time stats")
-    print("10. Display player placement")
-    selection = input()
-    if selection == "1":
-        the_game.print_player_names()
-        display_menu()
-    elif selection == "2":
-        print("Player fold stats:")
-        the_game.display_player_folds()
-        display_menu()
-    elif selection == "3":
-        exit()
-    elif selection == "4":
-        print("Player call stats:")
-        the_game.display_player_calls()
-        display_menu()
-    elif selection == "5":
-        the_game.print_poker_log()
-        display_menu()
-    elif selection == "6":
-        yourself.display_your_hands()
-        display_menu()
-    elif selection == "7":
-        print("Player hand wins:")
-        the_game.display_player_wins()
-        display_menu()
-    elif selection == "8":
-        print("Game length (HH:MM:SS):")
-        print(the_game.game_length)
-        display_menu()
-    elif selection == "9":
-        print("Play time stats:")
-        the_game.display_player_play_time()
-        display_menu()
-    elif selection == "10":
-        print("Player placements:")
-        the_game.display_player_placement()
-        display_menu()
+def display_header():
+    greeting = tk.Label(text="POKER READER", master=header_frame)
+    greeting.grid(sticky="n")
 
 the_game = Game()
 yourself = You()
 the_game.set_game_from_csv('PokerLog.csv')
 yourself.set_you_from_game(the_game)
-display_window_menu()
-#display_window_display(display_frame)
-players_btn = tk.Button(text="List all players", master=menu_frame, command=window_player_list)
-folds_btn = tk.Button(text="Player Fold Stats", master=menu_frame, command=the_game.display_player_folds)
-calls_btn = tk.Button(text="Player Call Stats", master=menu_frame, command=the_game.display_player_calls)
-wins_btn = tk.Button(text="Player Hand Win Stats", master=menu_frame, command=the_game.display_player_wins)
-playtime_btn = tk.Button(text="Player Play Time Stats", master=menu_frame, command=the_game.display_player_play_time)
-players_btn.pack()
-folds_btn.pack()
-calls_btn.pack()
-wins_btn.pack()
-playtime_btn.pack()
+display_header()
+display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
 window.mainloop()
-#TextHeadGenerator.textHeadGenerator("Welcome to Poker Reader!")
-#display_menu()
