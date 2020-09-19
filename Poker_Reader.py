@@ -106,7 +106,6 @@ class Game:
         else:
             print("Error: players are not set!")
 
-
     def set_player_folds(self, player):
         fold_total = 0
         for row in self.poker_log:
@@ -268,11 +267,11 @@ def display_window_menu(menu_frame, display_frame, game):
 
 def display_header():
     greeting = tk.Label(text="POKER READER", master=header_frame)
-    greeting.grid(sticky="n")
+    greeting.pack()
 
 the_game = Game()
 yourself = You()
-the_game.set_game_from_csv('PokerLog.csv')
+the_game.set_game_from_csv('Poker Logs/PokerLog.csv')
 yourself.set_you_from_game(the_game)
 display_header()
 display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
