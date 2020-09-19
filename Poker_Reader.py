@@ -98,14 +98,14 @@ class Game:
             print("Error: poker_log is not set!")
 
     def display_player_names(self, frame):
-        for widget in frame.winfo_children():
-            widget.destroy()
+        player_list = []
         if self.players_isset == True:
-            for row in self.players:
-                list_label = tk.Label(text=row.name, master=frame)
-                list_label.pack()
+            for player in self.players:
+                player_list.append(player.name)
+            display_stat_grid(player_list)
         else:
             print("Error: players are not set!")
+
 
     def set_player_folds(self, player):
         fold_total = 0
@@ -197,7 +197,7 @@ class Game:
                 players_without_chips.append(player)
             else:
                 players_with_chips.append(player)
-        #Make sure players with chips are the last players in the game (in case someone quit early with chips
+        #Make sure players with chips are the last players in the game (in case someone quit early with chips)
         for player in players_with_chips:
             if player.time_in_game <= players_without_chips[0].time_in_game:
                 players_without_chips.append(player)
@@ -206,11 +206,14 @@ class Game:
         if len(players_with_chips) > 1:
             sorted_with_chips = sorted(players_with_chips, key=lambda player: player.chips_quit_with, reverse=True)
             for player in sorted_with_chips:
-                placement_list.append(player.name + " split with " + str(player.chips_quit_with) + " chips")
+                placement_list.append(player.name)
+                chips_list.append("SPLIT: " + str(player.chips_quit_with) + " chips")
         else:
             placement_list.append(player.name)
+            chips_list.append("WINNER")
         for player in sorted_and_chipless:
             placement_list.append(player.name)
+            chips_list.append("KO")
         for iteration, string_row in enumerate(placement_list):
             place = iteration + 1
             if place == 1:
@@ -221,8 +224,8 @@ class Game:
                 ordinal_indicator = "rd"
             else:
                 ordinal_indicator = "th"
-            list_label = tk.Label(text=str(place) + ordinal_indicator + " - " + string_row, master=frame)
-            list_label.grid(sticky="n")
+            placement_string_list.append(str(place) + ordinal_indicator)
+        display_stat_grid(placement_string_list, placement_list, chips_list, grid_frame=frame)
 
     def set_game_time_stats(self):
         self.game_start_time = self.get_time_from_string(self.poker_log[-1][1])
