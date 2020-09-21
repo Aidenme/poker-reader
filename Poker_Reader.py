@@ -3,7 +3,9 @@ import TextHeadGenerator
 import re
 import tkinter as tk
 from datetime import datetime
+import os
 
+log_filename = "PokerLog.csv"
 window = tk.Tk()
 window.columnconfigure([0, 1], weight=1, minsize=250)
 window.rowconfigure(1, weight=1, minsize=500)
@@ -11,10 +13,12 @@ header_frame = tk.Frame(master=window, height=50, relief=tk.RAISED, borderwidth=
 view_frame = tk.Frame(master=window, bg="yellow")
 left_frame = tk.Frame(master=view_frame, bg="blue")
 right_frame = tk.Frame(master=view_frame, bg="red")
+log_info_frame = tk.Frame(master=window, bg="purple")
 header_frame.grid(row=0, columnspan=2, sticky="new")
 view_frame.grid(row=1, columnspan=2, sticky="nsew")
 left_frame.grid(row=1, column=0, columnspan=1, sticky="nsew")
 right_frame.grid(row=1, column=1, sticky="nsew")
+log_info_frame.grid(row=2, column=0, columnspan=2, sticky="ew")
 
 class You:
     def __init__(self):
@@ -251,6 +255,37 @@ def display_stat_grid(*stat_lists, grid_frame=right_frame, relief=tk.RAISED, bor
                 data_frame.grid(row=row_count, column=column_count, sticky="we")
                 data_label.pack()
 
+def set_csv_file(filename, csv_swap_window):
+    global log_filename
+    csv_swap_window.destroy()
+    log_filename = filename
+    display_log_info()
+
+def display_csv_swap_window():
+    csv_file_list = os.listdir('Poker Logs')
+    csv_swap_window = tk.Tk()
+    for filename in csv_file_list:
+        file_frame = tk.Frame(master=csv_swap_window)
+        file_frame.pack()
+        name_lbl = tk.Label(text=filename, master=file_frame)
+        name_lbl.pack()
+        select_btn = tk.Button(text="Select", master=file_frame, command=lambda filename=filename: set_csv_file(filename, csv_swap_window))
+        select_btn.pack()
+
+def display_log_info():
+    selected_csv_frame = tk.Frame(master=log_info_frame)
+
+    selected_lbl = tk.Label(text="Currently Selected CSV: ", master=selected_csv_frame)
+    selected_name_lbl = tk.Label(text=log_filename, master=selected_csv_frame)
+    selected_csv_frame.grid(row=0)
+    selected_lbl.grid(row=1, column=0, sticky="w")
+    selected_name_lbl.grid(row=1, column=1, sticky="nsew")
+
+    change_selection_frame = tk.Frame(master=log_info_frame)
+    change_btn = tk.Button(text="Change Selected CSV", master=change_selection_frame, command=display_csv_swap_window)
+    change_selection_frame.grid(row=1)
+    change_btn.grid(column=0, sticky="w")
+
 def display_window_menu(menu_frame, display_frame, game):
     players_btn = tk.Button(text="List all players", master=menu_frame, command=lambda: game.display_player_names(display_frame))
     folds_btn = tk.Button(text="List Fold Stats", master=menu_frame, command=lambda: game.display_player_folds(display_frame))
@@ -271,8 +306,9 @@ def display_header():
 
 the_game = Game()
 yourself = You()
-the_game.set_game_from_csv('Poker Logs/PokerLog.csv')
+the_game.set_game_from_csv('Poker Logs/' + log_filename)
 yourself.set_you_from_game(the_game)
 display_header()
 display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
+display_log_info()
 window.mainloop()
