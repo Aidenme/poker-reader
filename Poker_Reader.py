@@ -134,11 +134,17 @@ class Game:
     def set_player_quit_stats(self, player):
         play_time = None
         quit_chips = None
+        did_player_quit = False
         for row in self.poker_log:
             if player.name in row[0] and "quit" in row[0]:
                 quit_time = self.get_time_from_string(row[1])
                 play_time = quit_time - self.game_start_time
                 quit_chips = int((row[0].split("of "))[1].rstrip("."))
+                did_player_quit = True
+        if did_player_quit == False:
+            play_time = self.game_length
+            quit_chips = len(self.players) * 300
+
         return play_time, quit_chips
 
     def set_all_player_stats(self):
@@ -179,6 +185,8 @@ class Game:
     def display_player_play_time(self, frame):
         player_list = []
         play_time_list = []
+        for player in self.players:
+            print(player.name + ": " + str(player.time_in_game))
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
             player_list.append(player.name)
@@ -257,8 +265,13 @@ def display_stat_grid(*stat_lists, grid_frame=right_frame, relief=tk.RAISED, bor
 
 def set_csv_file(filename, csv_swap_window):
     global log_filename
+    global the_game
     csv_swap_window.destroy()
     log_filename = filename
+    new_game = Game()
+    new_game.set_game_from_csv('Poker Logs/' + log_filename)
+    the_game = new_game
+    display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
     display_log_info()
 
 def display_csv_swap_window():
@@ -273,6 +286,8 @@ def display_csv_swap_window():
         select_btn.pack()
 
 def display_log_info():
+    for widget in log_info_frame.winfo_children():
+        widget.destroy()
     selected_csv_frame = tk.Frame(master=log_info_frame)
 
     selected_lbl = tk.Label(text="Currently Selected CSV: ", master=selected_csv_frame)
@@ -287,6 +302,9 @@ def display_log_info():
     change_btn.grid(column=0, sticky="w")
 
 def display_window_menu(menu_frame, display_frame, game):
+    for widget in menu_frame.winfo_children():
+        widget.destroy()
+
     players_btn = tk.Button(text="List all players", master=menu_frame, command=lambda: game.display_player_names(display_frame))
     folds_btn = tk.Button(text="List Fold Stats", master=menu_frame, command=lambda: game.display_player_folds(display_frame))
     calls_btn = tk.Button(text="List Call Stats", master=menu_frame, command=lambda: game.display_player_calls(display_frame))
