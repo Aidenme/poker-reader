@@ -141,6 +141,7 @@ class Game:
                 play_time = quit_time - self.game_start_time
                 quit_chips = int((row[0].split("of "))[1].rstrip("."))
                 did_player_quit = True
+        # If all players quit the last player will not have "quit" in any row of the log.
         if did_player_quit == False:
             play_time = self.game_length
             quit_chips = len(self.players) * 300
@@ -272,18 +273,20 @@ def set_csv_file(filename, csv_swap_window):
     new_game.set_game_from_csv('Poker Logs/' + log_filename)
     the_game = new_game
     display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
+    clear_stat_display()
     display_log_info()
 
 def display_csv_swap_window():
     csv_file_list = os.listdir('Poker Logs')
     csv_swap_window = tk.Tk()
     for filename in csv_file_list:
-        file_frame = tk.Frame(master=csv_swap_window)
-        file_frame.pack()
-        name_lbl = tk.Label(text=filename, master=file_frame)
-        name_lbl.pack()
-        select_btn = tk.Button(text="Select", master=file_frame, command=lambda filename=filename: set_csv_file(filename, csv_swap_window))
-        select_btn.pack()
+        if ".csv" in filename:
+            file_frame = tk.Frame(master=csv_swap_window)
+            file_frame.pack()
+            name_lbl = tk.Label(text=filename, master=file_frame)
+            name_lbl.pack()
+            select_btn = tk.Button(text="Select", master=file_frame, command=lambda filename=filename: set_csv_file(filename, csv_swap_window))
+            select_btn.pack()
 
 def display_log_info():
     for widget in log_info_frame.winfo_children():
@@ -321,6 +324,10 @@ def display_window_menu(menu_frame, display_frame, game):
 def display_header():
     greeting = tk.Label(text="POKER READER", master=header_frame)
     greeting.pack()
+
+def clear_stat_display():
+    for widget in right_frame.winfo_children():
+        widget.destroy()
 
 the_game = Game()
 yourself = You()
