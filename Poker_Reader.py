@@ -279,14 +279,14 @@ def set_csv_file(filename, csv_swap_window):
 def display_csv_swap_window():
     csv_file_list = os.listdir('Poker Logs')
     csv_swap_window = tk.Tk()
-    for filename in csv_file_list:
+    for itr, filename in enumerate(csv_file_list):
         if ".csv" in filename:
-            file_frame = tk.Frame(master=csv_swap_window)
-            file_frame.pack()
+            file_frame = tk.Frame(master=csv_swap_window, relief=tk.RIDGE, borderwidth=5)
+            file_frame.grid(sticky="nsew")
             name_lbl = tk.Label(text=filename, master=file_frame)
-            name_lbl.pack()
-            select_btn = tk.Button(text="Select", master=file_frame, command=lambda filename=filename: set_csv_file(filename, csv_swap_window))
-            select_btn.pack()
+            name_lbl.grid(row=itr, column=1, padx=20)
+            select_btn = tk.Button(text="Select", master=file_frame, relief=tk.RAISED, borderwidth=5, height=2, width=8, command=lambda filename=filename: set_csv_file(filename, csv_swap_window))
+            select_btn.grid(row=itr, column=0)
 
 def display_log_info():
     for widget in log_info_frame.winfo_children():
