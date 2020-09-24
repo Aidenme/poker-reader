@@ -1,1 +1,1 @@
-Poker_Reader takes a csv log file from PokerNow and outputs selected statistics about the game. To use it download a CSV file from PokerNow, name the file PokerLog.csv and replace the current PokerLog.csv file in the folder. This has to be run without a GUI currently.
+Poker_Reader takes a csv log file from PokerNow and outputs selected statistics about the game. To use it download a CSV file from PokerNow and put it in the Poker Logs folder.
