@@ -5,7 +5,8 @@ import tkinter as tk
 from datetime import datetime
 import os
 
-log_filename = "PokerLog.csv"
+log_filename = "SampleLog.csv"
+log_folder_name = "Poker Logs"
 window = tk.Tk()
 window.columnconfigure([0, 1], weight=1)
 window.rowconfigure(1, weight=1)
@@ -87,10 +88,13 @@ class Game:
         self.players_isset = True
 
     def set_game_from_csv(self, csv_file):
-        with open(csv_file) as csvfile:
-            poker_log_reader = csv.reader(csvfile, delimiter=',')
-            for row in poker_log_reader:
-                self.poker_log.append(row)
+        try:
+            with open(csv_file) as csvfile:
+                poker_log_reader = csv.reader(csvfile, delimiter=',')
+                for row in poker_log_reader:
+                    self.poker_log.append(row)
+        except:
+            print("Could not find CSV file in Poker Logs folder.")
         self.log_isset = True
         self.set_game_time_stats()
         self.set_players()
@@ -188,8 +192,7 @@ class Game:
     def display_player_play_time(self, frame):
         player_list = []
         play_time_list = []
-        for player in self.players:
-            print(player.name + ": " + str(player.time_in_game))
+
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
             player_list.append(player.name)
@@ -328,9 +331,30 @@ def clear_stat_display():
     for widget in right_frame.winfo_children():
         widget.destroy()
 
+def check_for_logs():
+    file_list = os.listdir(log_folder_name)
+    print(file_list)
+    any_csv = False
+    for row in file_list:
+        if ".csv" in row:
+            any_csv = True
+    if any_csv == False:
+        display_message("No PokerNow logs found in " + log_folder_name + " folder. Please put a CSV file in the folder.")
+
+def check_folder():
+    directory_list = os.listdir()
+    if log_folder_name not in directory_list:
+        os.mkdir(log_folder_name)
+    check_for_logs()
+
+def display_message(message, frame=right_frame):
+    message = tk.Label(text=message, master=frame)
+    message.grid()
+
 the_game = Game()
 yourself = You()
-the_game.set_game_from_csv('Poker Logs/' + log_filename)
+check_folder()
+the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
 display_header()
 display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
