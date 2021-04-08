@@ -7,21 +7,6 @@ import os
 
 log_filename = "SampleLog.csv"
 log_folder_name = "Poker Logs"
-window = tk.Tk()
-window.columnconfigure([0, 1], weight=1)
-window.rowconfigure(1, weight=1)
-header_frame = tk.Frame(master=window, height=50, relief=tk.RAISED, borderwidth=5)
-view_frame = tk.Frame(master=window)
-left_frame = tk.Frame(master=view_frame)
-right_frame = tk.Frame(master=view_frame, pady=25, padx=25)
-log_info_frame = tk.Frame(master=window)
-header_frame.grid(row=0, columnspan=2, sticky="new")
-view_frame.grid(row=1, columnspan=2, sticky="nsew")
-left_frame.grid(row=1, column=0, columnspan=1, sticky="nsew")
-right_frame.grid(row=1, column=1, sticky="nsew")
-log_info_frame.grid(row=2, columnspan=2, sticky="sew")
-log_info_frame.grid_rowconfigure(0, weight=1)
-log_info_frame.grid_columnconfigure([0,1, 2], weight=1)
 
 class You:
     def __init__(self):
@@ -301,5 +286,3 @@ yourself = You()
 check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
-display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
-window.mainloop()
