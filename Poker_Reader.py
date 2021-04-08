@@ -259,16 +259,6 @@ class Game:
         time = datetime(int(year[0]), int(month[0]), int(day[0]), int(hour[0]), int(minute[0]), int(second[0]))
         return time
 
-def display_stat_grid(*stat_lists, grid_frame=right_frame, relief=tk.RAISED, border_width=2):
-        for widget in grid_frame.winfo_children():
-            widget.destroy()
-        for column_count, column in enumerate(stat_lists):
-            for row_count, data_field in enumerate(column):
-                data_frame = tk.Frame(relief=relief,  width=100, borderwidth=border_width, master=grid_frame)
-                data_label = tk.Label(text=data_field, master=data_frame)
-                data_frame.grid(row=row_count, column=column_count, sticky="we")
-                data_label.pack()
-
 def display_window_menu(menu_frame, display_frame, game):
     for widget in menu_frame.winfo_children():
         widget.destroy()
