@@ -166,15 +166,13 @@ class Game:
         for player in sorted_players:
             print(player.name + " " + str(player.wins))
 
-    def display_player_play_time(self, frame):
+    def display_player_play_time(self):
         player_list = []
         play_time_list = []
 
         sorted_players = sorted(self.players, key=lambda player: player.time_in_game, reverse=True)
         for player in sorted_players:
-            player_list.append(player.name)
-            play_time_list.append(player.time_in_game)
-        display_stat_grid(player_list, play_time_list, grid_frame=frame)
+            print(player.name + " " + str(player.time_in_game))
 
     def display_player_placement(self, frame):
         player_list = []
@@ -257,4 +255,4 @@ yourself = You()
 check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
-the_game.display_player_wins()
+the_game.display_player_play_time()
