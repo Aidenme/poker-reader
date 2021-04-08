@@ -152,14 +152,12 @@ class Game:
         for player in sorted_players:
             print(str(player.name) + " " + str(player.folds))
 
-    def display_player_calls(self, frame):
+    def display_player_calls(self):
         player_list = []
         calls_list = []
         sorted_players = sorted(self.players, key=lambda player: player.calls, reverse=True)
         for player in sorted_players:
-            player_list.append(player.name)
-            calls_list.append(player.calls)
-        display_stat_grid(player_list, calls_list, grid_frame=frame)
+            print(player.name + " " + str(player.calls))
 
     def display_player_wins(self, frame):
         player_list = []
@@ -261,4 +259,4 @@ yourself = You()
 check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
-the_game.display_player_folds()
+the_game.display_player_calls()
