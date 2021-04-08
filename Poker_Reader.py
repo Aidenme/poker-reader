@@ -92,12 +92,11 @@ class Game:
         else:
             print("Error: poker_log is not set!")
 
-    def display_player_names(self, frame):
+    def display_player_names(self):
         player_list = []
         if self.players_isset == True:
             for player in self.players:
-                player_list.append(player.name)
-            display_stat_grid(player_list)
+                print(player.name)
         else:
             print("Error: players are not set!")
 
@@ -244,27 +243,6 @@ class Game:
         time = datetime(int(year[0]), int(month[0]), int(day[0]), int(hour[0]), int(minute[0]), int(second[0]))
         return time
 
-def display_window_menu(menu_frame, display_frame, game):
-    for widget in menu_frame.winfo_children():
-        widget.destroy()
-
-    players_btn = tk.Button(text="List all players", master=menu_frame, command=lambda: game.display_player_names(display_frame))
-    folds_btn = tk.Button(text="List Fold Stats", master=menu_frame, command=lambda: game.display_player_folds(display_frame))
-    calls_btn = tk.Button(text="List Call Stats", master=menu_frame, command=lambda: game.display_player_calls(display_frame))
-    wins_btn = tk.Button(text="List Hand Win Stats", master=menu_frame, command=lambda: game.display_player_wins(display_frame))
-    playtime_btn = tk.Button(text="List Play Times", master=menu_frame, command=lambda: game.display_player_play_time(display_frame))
-    placement_btn = tk.Button(text="List Placement", master=menu_frame, command=lambda: game.display_player_placement(display_frame))
-    players_btn.grid(row=0, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
-    folds_btn.grid(row=1, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
-    calls_btn.grid(row=2, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
-    wins_btn.grid(row=3, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
-    playtime_btn.grid(row=4, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
-    placement_btn.grid(row=5, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
-
-def clear_stat_display():
-    for widget in right_frame.winfo_children():
-        widget.destroy()
-
 def check_for_logs():
     file_list = os.listdir(log_folder_name)
     print(file_list)
@@ -286,3 +264,4 @@ yourself = You()
 check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
+the_game.display_player_names()
