@@ -145,15 +145,12 @@ class Game:
             player.wins = self.set_player_wins(player)
             player.time_in_game, player.chips_quit_with = self.set_player_quit_stats(player)
 
-    def display_player_folds(self, frame):
+    def display_player_folds(self):
         player_list = []
         folds_list = []
         sorted_players = sorted(self.players, key=lambda player: player.folds, reverse=True)
         for player in sorted_players:
-            player_list.append(player.name)
-            folds_list.append(player.folds)
-        display_stat_grid(player_list, folds_list, grid_frame=frame)
-            #iteration, string_row in enumerate(placement_list)
+            print(str(player.name) + " " + str(player.folds))
 
     def display_player_calls(self, frame):
         player_list = []
@@ -264,4 +261,4 @@ yourself = You()
 check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
-the_game.display_player_names()
+the_game.display_player_folds()
