@@ -269,43 +269,6 @@ def display_stat_grid(*stat_lists, grid_frame=right_frame, relief=tk.RAISED, bor
                 data_frame.grid(row=row_count, column=column_count, sticky="we")
                 data_label.pack()
 
-def set_csv_file(filename, csv_swap_window):
-    global log_filename
-    global the_game
-    csv_swap_window.destroy()
-    log_filename = filename
-    new_game = Game()
-    new_game.set_game_from_csv('Poker Logs/' + log_filename)
-    the_game = new_game
-    display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
-    clear_stat_display()
-    display_log_info()
-
-def display_csv_swap_window():
-    csv_file_list = os.listdir('Poker Logs')
-    csv_swap_window = tk.Tk()
-    for itr, filename in enumerate(csv_file_list):
-        if ".csv" in filename:
-            file_frame = tk.Frame(master=csv_swap_window, relief=tk.RIDGE, borderwidth=5)
-            file_frame.grid(sticky="nsew")
-            name_lbl = tk.Label(text=filename, master=file_frame)
-            name_lbl.grid(row=itr, column=1, padx=20)
-            select_btn = tk.Button(text="Select", master=file_frame, relief=tk.RAISED, borderwidth=5, height=2, width=8, command=lambda filename=filename: set_csv_file(filename, csv_swap_window))
-            select_btn.grid(row=itr, column=0)
-
-def display_log_info():
-    for widget in log_info_frame.winfo_children():
-        widget.destroy()
-
-    label_frame = tk.Frame(master=log_info_frame, bg="red")
-    selected_lbl = tk.Label(text="PokerNow Log: ", master=label_frame, relief=tk.RIDGE, borderwidth=2, height=1)
-    selected_name_lbl = tk.Label(text=log_filename, master=label_frame, relief=tk.RIDGE, borderwidth=2, height=1, width=40)
-    change_btn = tk.Button(text="Change", master=log_info_frame, command=display_csv_swap_window, relief=tk.RAISED, borderwidth=5, height=2, width=6, bg="green")
-    label_frame.grid(sticky='swe', columnspan=2)
-    selected_lbl.grid(row=0, sticky='w')
-    selected_name_lbl.grid(row=0, column=1, sticky='w')
-    change_btn.grid(row=0, column=2, sticky='e')
-
 def display_window_menu(menu_frame, display_frame, game):
     for widget in menu_frame.winfo_children():
         widget.destroy()
@@ -349,5 +312,4 @@ check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
 display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
-display_log_info()
 window.mainloop()
