@@ -323,10 +323,6 @@ def display_window_menu(menu_frame, display_frame, game):
     playtime_btn.grid(row=4, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
     placement_btn.grid(row=5, column=0, sticky="new", ipadx=20, ipady=10, padx=15, pady=10)
 
-def display_header():
-    greeting = tk.Label(text="POKER READER", master=header_frame)
-    greeting.pack()
-
 def clear_stat_display():
     for widget in right_frame.winfo_children():
         widget.destroy()
@@ -352,7 +348,6 @@ yourself = You()
 check_folder()
 the_game.set_game_from_csv(log_folder_name + '/' + log_filename)
 yourself.set_you_from_game(the_game)
-display_header()
 display_window_menu(menu_frame=left_frame, display_frame=right_frame, game=the_game)
 display_log_info()
 window.mainloop()
