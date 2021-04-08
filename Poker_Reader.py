@@ -347,10 +347,6 @@ def check_folder():
         os.mkdir(log_folder_name)
     check_for_logs()
 
-def display_message(message, frame=right_frame):
-    message = tk.Label(text=message, master=frame)
-    message.grid()
-
 the_game = Game()
 yourself = You()
 check_folder()
